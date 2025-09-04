@@ -1,0 +1,39 @@
+plugins {
+    id 'java'
+    id 'io.quarkus' version '3.20.1'
+}
+
+repositories {
+    mavenCentral()
+}
+
+group = "org.acme"
+version = "1.0.0-SNAPSHOT"
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+dependencies {
+    // Import BOMs
+    implementation platform("io.quarkus.platform:quarkus-bom:3.20.1")
+    implementation platform("org.kie.kogito:kogito-bom:1.44.0.Final")
+
+    // Quarkus extensions
+    implementation "io.quarkus:quarkus-resteasy-reactive"
+    implementation "io.quarkus:quarkus-arc"
+    implementation "io.quarkus:quarkus-smallrye-openapi"
+    implementation "io.quarkus:quarkus-smallrye-health"
+
+    // Kogito workflow
+    implementation "io.quarkus:quarkus-kogito-workflow"
+
+    // (Optional) Drools if you need decision tables
+    implementation "org.kie.kogito:kogito-drools"
+    implementation "org.drools:drools-decisiontables"
+
+    // Test deps
+    testImplementation "io.quarkus:quarkus-junit5"
+    testImplementation "io.rest-assured:rest-assured"
+}

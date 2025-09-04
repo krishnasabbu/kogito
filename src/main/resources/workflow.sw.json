@@ -1,0 +1,76 @@
+{
+  "id": "validation-pipeline",
+  "version": "1.0",
+  "specVersion": "0.8",
+  "name": "Validation Pipeline Workflow",
+  "description": "Implements EIA Validation → CIP Validation (optional) → Final Response",
+  "start": "EIA Validation",
+  "states": [
+    {
+      "name": "EIA Validation",
+      "type": "operation",
+      "actions": [
+        {
+          "functionRef": {
+            "refName": "eiaValidation"
+          }
+        }
+      ],
+      "transition": "EIA Outcome"
+    },
+    {
+      "name": "EIA Outcome",
+      "type": "switch",
+      "dataConditions": [
+        {
+          "condition": "${ .eiaValid == true }",
+          "transition": "External CIP Validation"
+        }
+      ],
+      "defaultCondition": {
+        "transition": "Final Response"
+      }
+    },
+    {
+      "name": "External CIP Validation",
+      "type": "operation",
+      "actions": [
+        {
+          "functionRef": {
+            "refName": "externalCipValidation"
+          }
+        }
+      ],
+      "transition": "Final Response"
+    },
+    {
+      "name": "Final Response",
+      "type": "operation",
+      "actions": [
+        {
+          "functionRef": {
+            "refName": "finalResponse"
+          }
+        }
+      ],
+      "end": true
+    }
+  ],
+  "functions": [
+    {
+      "name": "eiaValidation",
+      "type": "custom",
+      "operation": "eiaValidation"
+    },
+    {
+      "name": "externalCipValidation",
+      "type": "custom",
+      "operation": "externalCipValidation"
+    },
+    {
+      "name": "finalResponse",
+      "type": "custom",
+      "operation": "finalResponse"
+    }
+  ]
+}
