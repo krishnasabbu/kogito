@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:oryx="http://www.b3mn.org/oryx" width="1050" height="200" version="1.2" viewBox="0 0 1050 200">
+  <defs/>
+  <g stroke="none" fill="none" stroke-width="1" fill-rule="evenodd">
+    <g transform="translate(-7, -7)">
+      <!-- Start Event -->
+      <g>
+        <circle cx="118" cy="118" r="18" stroke="#000000" stroke-width="1" fill="#ffffff"/>
+        <text x="118" y="145" text-anchor="middle" font-family="Arial" font-size="12">Start</text>
+      </g>
+      
+      <!-- EIA Validation Task -->
+      <g>
+        <rect x="200" y="78" width="100" height="80" stroke="#000000" stroke-width="1" fill="#ffeaa7" rx="10"/>
+        <text x="250" y="115" text-anchor="middle" font-family="Arial" font-size="11">EIA</text>
+        <text x="250" y="128" text-anchor="middle" font-family="Arial" font-size="11">Validation</text>
+      </g>
+      
+      <!-- Decision Gateway -->
+      <g>
+        <polygon points="400,93 425,118 400,143 375,118" stroke="#000000" stroke-width="1" fill="#fdcb6e"/>
+        <text x="400" y="170" text-anchor="middle" font-family="Arial" font-size="10">EIA Outcome</text>
+      </g>
+      
+      <!-- CIP Validation Task -->
+      <g>
+        <rect x="500" y="30" width="100" height="80" stroke="#000000" stroke-width="1" fill="#74b9ff" rx="10"/>
+        <text x="550" y="65" text-anchor="middle" font-family="Arial" font-size="10">External CIP</text>
+        <text x="550" y="78" text-anchor="middle" font-family="Arial" font-size="10">Validation</text>
+      </g>
+      
+      <!-- Merge Gateway -->
+      <g>
+        <polygon points="700,93 725,118 700,143 675,118" stroke="#000000" stroke-width="1" fill="#fdcb6e"/>
+      </g>
+      
+      <!-- Final Response Task -->
+      <g>
+        <rect x="800" y="78" width="100" height="80" stroke="#000000" stroke-width="1" fill="#55a3ff" rx="10"/>
+        <text x="850" y="115" text-anchor="middle" font-family="Arial" font-size="11">Final</text>
+        <text x="850" y="128" text-anchor="middle" font-family="Arial" font-size="11">Response</text>
+      </g>
+      
+      <!-- End Event -->
+      <g>
+        <circle cx="993" cy="118" r="18" stroke="#000000" stroke-width="3" fill="#ffffff"/>
+        <text x="993" y="145" text-anchor="middle" font-family="Arial" font-size="12">Stop</text>
+      </g>
+      
+      <!-- Sequence Flows -->
+      <g stroke="#000000" stroke-width="1" fill="none">
+        <path d="M 136 118 L 200 118" marker-end="url(#arrowhead)"/>
+        <path d="M 300 118 L 375 118" marker-end="url(#arrowhead)"/>
+        <path d="M 400 93 L 400 70 L 500 70" marker-end="url(#arrowhead)"/>
+        <path d="M 425 118 L 675 118" marker-end="url(#arrowhead)"/>
+        <path d="M 600 70 L 700 70 L 700 93" marker-end="url(#arrowhead)"/>
+        <path d="M 725 118 L 800 118" marker-end="url(#arrowhead)"/>
+        <path d="M 900 118 L 975 118" marker-end="url(#arrowhead)"/>
+      </g>
+      
+      <!-- Flow Labels -->
+      <text x="450" y="60" text-anchor="middle" font-family="Arial" font-size="10">Requires CIP</text>
+      <text x="550" y="135" text-anchor="middle" font-family="Arial" font-size="10">Direct Response</text>
+    </g>
+    
+    <!-- Arrow marker definition -->
+    <defs>
+      <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+        <polygon points="0 0, 10 3.5, 0 7" fill="#000000"/>
+      </marker>
+    </defs>
+  </g>
+</svg>

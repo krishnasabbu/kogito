@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn2:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL"
+                   xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+                   xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+                   xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+                   id="Definition"
+                   targetNamespace="http://www.jboss.org/drools">
+
+  <bpmn2:itemDefinition id="_eiaRequestItem" structureRef="com.example.model.EIARequest"/>
+  <bpmn2:itemDefinition id="_eiaResponseItem" structureRef="com.example.model.EIAResponse"/>
+
+  <bpmn2:process id="eia-validation-process" name="EIA Validation Process" isExecutable="true">
+
+    <bpmn2:property id="eiaRequest" itemSubjectRef="_eiaRequestItem"/>
+    <bpmn2:property id="eiaResponse" itemSubjectRef="_eiaResponseItem"/>
+
+    <bpmn2:startEvent id="StartEvent" name="Start">
+      <bpmn2:outgoing>SequenceFlow_1</bpmn2:outgoing>
+    </bpmn2:startEvent>
+
+    <bpmn2:scriptTask id="ProcessTask" name="Process EIA" scriptFormat="java">
+      <bpmn2:incoming>SequenceFlow_1</bpmn2:incoming>
+      <bpmn2:outgoing>SequenceFlow_2</bpmn2:outgoing>
+      <bpmn2:script>
+        System.out.println("Processing EIA for project: " + eiaRequest.getProjectId());
+
+        com.example.model.EIAResponse response = new com.example.model.EIAResponse();
+        response.setProcessInstanceId(kcontext.getProcessInstance().getId());
+        response.setStatus("APPROVED");
+        response.setMessage("EIA validation completed successfully");
+        response.setValidationResult("APPROVED");
+        response.setCipValidationRequired(false);
+
+        kcontext.setVariable("eiaResponse", response);
+      </bpmn2:script>
+    </bpmn2:scriptTask>
+
+    <bpmn2:endEvent id="EndEvent" name="End">
+      <bpmn2:incoming>SequenceFlow_2</bpmn2:incoming>
+    </bpmn2:endEvent>
+
+    <bpmn2:sequenceFlow id="SequenceFlow_1" sourceRef="StartEvent" targetRef="ProcessTask"/>
+    <bpmn2:sequenceFlow id="SequenceFlow_2" sourceRef="ProcessTask" targetRef="EndEvent"/>
+
+  </bpmn2:process>
+
+  <bpmndi:BPMNDiagram>
+    <bpmndi:BPMNPlane bpmnElement="eia-validation-process">
+      <bpmndi:BPMNShape bpmnElement="StartEvent">
+        <dc:Bounds x="100" y="100" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="ProcessTask">
+        <dc:Bounds x="200" y="78" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="EndEvent">
+        <dc:Bounds x="375" y="100" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge bpmnElement="SequenceFlow_1">
+        <di:waypoint x="136" y="118"/>
+        <di:waypoint x="200" y="118"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="SequenceFlow_2">
+        <di:waypoint x="300" y="118"/>
+        <di:waypoint x="375" y="118"/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+
+</bpmn2:definitions>
