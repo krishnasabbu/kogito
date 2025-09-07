@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn2:definitions
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL"
+    xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI/"
+    xmlns:dc="http://www.omg.org/spec/DD/20100524/DC/"
+    xmlns:di="http://www.omg.org/spec/DD/DI/"
+    xmlns:drools="http://www.jboss.org/drools"
+    xmlns:kogito="http://www.kogito.org/"
+    id="Definitions_1"
+    targetNamespace="http://kogito.org/loan">
+
+  <!-- Item Definitions -->
+  <bpmn2:itemDefinition id="StringType" structureRef="java.lang.String"/>
+  <bpmn2:itemDefinition id="IntegerType" structureRef="java.lang.Integer"/>
+  <bpmn2:itemDefinition id="DoubleType" structureRef="java.lang.Double"/>
+
+  <!-- Messages -->
+  <bpmn2:message id="EvaluateLoanInputMessage" name="EvaluateLoanInputMessage" itemRef="IntegerType"/>
+  <bpmn2:message id="EvaluateLoanOutputMessage" name="EvaluateLoanOutputMessage" itemRef="StringType"/>
+
+  <!-- Process Interface -->
+  <bpmn2:interface id="LoanProcessInterface" name="LoanProcessInterface">
+    <bpmn2:operation id="EvaluateLoanOperation" name="evaluateLoan"
+                     inMessageRef="EvaluateLoanInputMessage"
+                     outMessageRef="EvaluateLoanOutputMessage"/>
+  </bpmn2:interface>
+
+  <!-- Process -->
+  <bpmn2:process id="LoanApprovalProcess" name="Loan Approval Process" isExecutable="true">
+    <bpmn2:interfaceRef>LoanProcessInterface</bpmn2:interfaceRef>
+
+    <!-- Process Variables -->
+    <bpmn2:property id="creditScore" name="creditScore" itemSubjectRef="IntegerType"/>
+    <bpmn2:property id="loanAmount" name="loanAmount" itemSubjectRef="DoubleType"/>
+    <bpmn2:property id="approvalStatus" name="approvalStatus" itemSubjectRef="StringType"/>
+
+    <!-- Start Event -->
+    <bpmn2:startEvent id="StartEvent_1" name="Loan Request Received">
+      <bpmn2:outgoing>Flow_1</bpmn2:outgoing>
+    </bpmn2:startEvent>
+
+    <!-- Business Rule Task (DMN) -->
+    <bpmn2:businessRuleTask id="BusinessRuleTask_1" name="Evaluate Loan Application"
+                            drools:ruleLanguage="DMN"
+                            drools:ruleFlowGroup="dummy-group"
+                            kogito:dmnModelName="Loan Approval"
+                            kogito:dmnDecisionName="approvalStatus">
+      <bpmn2:incoming>Flow_1</bpmn2:incoming>
+      <bpmn2:outgoing>Flow_2</bpmn2:outgoing>
+
+      <bpmn2:ioSpecification>
+        <bpmn2:dataInput id="di_creditScore" name="creditScore" itemSubjectRef="IntegerType"/>
+        <bpmn2:dataInput id="di_loanAmount" name="loanAmount" itemSubjectRef="DoubleType"/>
+        <bpmn2:dataOutput id="do_approvalStatus" name="approvalStatus" itemSubjectRef="StringType"/>
+        <bpmn2:inputSet>
+          <bpmn2:dataInputRefs>di_creditScore</bpmn2:dataInputRefs>
+          <bpmn2:dataInputRefs>di_loanAmount</bpmn2:dataInputRefs>
+        </bpmn2:inputSet>
+        <bpmn2:outputSet>
+          <bpmn2:dataOutputRefs>do_approvalStatus</bpmn2:dataOutputRefs>
+        </bpmn2:outputSet>
+      </bpmn2:ioSpecification>
+
+      <bpmn2:dataInputAssociation>
+        <bpmn2:sourceRef>creditScore</bpmn2:sourceRef>
+        <bpmn2:targetRef>di_creditScore</bpmn2:targetRef>
+      </bpmn2:dataInputAssociation>
+      <bpmn2:dataInputAssociation>
+        <bpmn2:sourceRef>loanAmount</bpmn2:sourceRef>
+        <bpmn2:targetRef>di_loanAmount</bpmn2:targetRef>
+      </bpmn2:dataInputAssociation>
+      <bpmn2:dataOutputAssociation>
+        <bpmn2:sourceRef>do_approvalStatus</bpmn2:sourceRef>
+        <bpmn2:targetRef>approvalStatus</bpmn2:targetRef>
+      </bpmn2:dataOutputAssociation>
+    </bpmn2:businessRuleTask>
+
+    <!-- Exclusive Gateway -->
+    <bpmn2:exclusiveGateway id="Gateway_1" name="Approval Status" gatewayDirection="Diverging">
+      <bpmn2:incoming>Flow_2</bpmn2:incoming>
+      <bpmn2:outgoing>Flow_Approved_Task</bpmn2:outgoing>
+      <bpmn2:outgoing>Flow_Declined_Task</bpmn2:outgoing>
+      <bpmn2:outgoing>Flow_Manual_Task</bpmn2:outgoing>
+    </bpmn2:exclusiveGateway>
+
+    <!-- Script Tasks -->
+    <bpmn2:scriptTask id="NotifyApproved" name="Notify Approved" scriptFormat="java">
+      <bpmn2:incoming>Flow_Approved_Task</bpmn2:incoming>
+      <bpmn2:outgoing>Flow_Approved_End</bpmn2:outgoing>
+      <bpmn2:script><![CDATA[
+        System.out.println("Loan Approved for amount: " + loanAmount);
+      ]]></bpmn2:script>
+    </bpmn2:scriptTask>
+
+    <bpmn2:scriptTask id="NotifyDeclined" name="Notify Declined" scriptFormat="java">
+      <bpmn2:incoming>Flow_Declined_Task</bpmn2:incoming>
+      <bpmn2:outgoing>Flow_Declined_End</bpmn2:outgoing>
+      <bpmn2:script><![CDATA[
+        System.out.println("Loan Declined for amount: " + loanAmount);
+      ]]></bpmn2:script>
+    </bpmn2:scriptTask>
+
+    <bpmn2:scriptTask id="NotifyManual" name="Notify Manual Review" scriptFormat="java">
+      <bpmn2:incoming>Flow_Manual_Task</bpmn2:incoming>
+      <bpmn2:outgoing>Flow_Manual_End</bpmn2:outgoing>
+      <bpmn2:script><![CDATA[
+        System.out.println("Loan requires manual review for amount: " + loanAmount);
+      ]]></bpmn2:script>
+    </bpmn2:scriptTask>
+
+    <!-- End Events -->
+    <bpmn2:endEvent id="End_Approved" name="Loan Approved">
+      <bpmn2:incoming>Flow_Approved_End</bpmn2:incoming>
+    </bpmn2:endEvent>
+
+    <bpmn2:endEvent id="End_Declined" name="Loan Declined">
+      <bpmn2:incoming>Flow_Declined_End</bpmn2:incoming>
+    </bpmn2:endEvent>
+
+    <bpmn2:endEvent id="End_Manual" name="Manual Review Required">
+      <bpmn2:incoming>Flow_Manual_End</bpmn2:incoming>
+    </bpmn2:endEvent>
+
+    <!-- Sequence Flows -->
+    <bpmn2:sequenceFlow id="Flow_1" sourceRef="StartEvent_1" targetRef="BusinessRuleTask_1"/>
+    <bpmn2:sequenceFlow id="Flow_2" sourceRef="BusinessRuleTask_1" targetRef="Gateway_1"/>
+    
+    <!-- ✅ FIXED: Added return and .equals() for valid Java -->
+    <bpmn2:sequenceFlow id="Flow_Approved_Task" sourceRef="Gateway_1" targetRef="NotifyApproved">
+      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression"><![CDATA[{ return approvalStatus.equals("Approved"); }]]></bpmn2:conditionExpression>
+    </bpmn2:sequenceFlow>
+
+    <bpmn2:sequenceFlow id="Flow_Declined_Task" sourceRef="Gateway_1" targetRef="NotifyDeclined">
+      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression"><![CDATA[{ return approvalStatus.equals("Declined"); }]]></bpmn2:conditionExpression>
+    </bpmn2:sequenceFlow>
+
+    <bpmn2:sequenceFlow id="Flow_Manual_Task" sourceRef="Gateway_1" targetRef="NotifyManual">
+      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression"><![CDATA[{ return approvalStatus.equals("Manual Review"); }]]></bpmn2:conditionExpression>
+    </bpmn2:sequenceFlow>
+
+    <bpmn2:sequenceFlow id="Flow_Approved_End" sourceRef="NotifyApproved" targetRef="End_Approved"/>
+    <bpmn2:sequenceFlow id="Flow_Declined_End" sourceRef="NotifyDeclined" targetRef="End_Declined"/>
+    <bpmn2:sequenceFlow id="Flow_Manual_End" sourceRef="NotifyManual" targetRef="End_Manual"/>
+
+  </bpmn2:process>
+</bpmn2:definitions>

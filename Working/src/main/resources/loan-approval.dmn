@@ -1,0 +1,116 @@
+<dmn:definitions xmlns:dmn="http://www.omg.org/spec/DMN/20180521/MODEL/"
+                 xmlns="https://github.com/kiegroup/drools/kie-dmn/_LOAN_APPROVAL"
+                 xmlns:di="http://www.omg.org/spec/DMN/20180521/DI/"
+                 xmlns:kie="http://www.drools.org/kie/dmn/1.2"
+                 xmlns:feel="http://www.omg.org/spec/DMN/20180521/FEEL/"
+                 xmlns:dmndi="http://www.omg.org/spec/DMN/20180521/DMNDI/"
+                 xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/"
+                 id="_LOAN_APPROVAL_DMN"
+                 name="Loan Approval"
+                 expressionLanguage="http://www.omg.org/spec/DMN/20180521/FEEL/"
+                 typeLanguage="http://www.omg.org/spec/DMN/20180521/FEEL/"
+                 namespace="https://github.com/kiegroup/drools/kie-dmn/_LOAN_APPROVAL">
+
+  <!-- Input Data -->
+  <dmn:inputData id="_Input_CreditScore" name="creditScore">
+    <dmn:variable id="_Var_CreditScore" name="creditScore" typeRef="number"/>
+  </dmn:inputData>
+
+  <dmn:inputData id="_Input_LoanAmount" name="loanAmount">
+    <dmn:variable id="_Var_LoanAmount" name="loanAmount" typeRef="number"/>
+  </dmn:inputData>
+
+  <!-- Decision -->
+  <dmn:decision id="_Decision_LoanApproval" name="approvalStatus">
+    <dmn:variable id="_Var_ApprovalStatus" name="approvalStatus" typeRef="string"/>
+    <dmn:informationRequirement id="_IR_CreditScore">
+      <dmn:requiredInput href="#_Input_CreditScore"/>
+    </dmn:informationRequirement>
+    <dmn:informationRequirement id="_IR_LoanAmount">
+      <dmn:requiredInput href="#_Input_LoanAmount"/>
+    </dmn:informationRequirement>
+
+    <!-- Decision Table -->
+    <dmn:decisionTable id="_DecisionTable_LoanApproval" hitPolicy="UNIQUE" preferredOrientation="Rule-as-Row">
+
+      <!-- Inputs -->
+      <dmn:input id="_Input_DT_CreditScore">
+        <dmn:inputExpression id="_Expr_CreditScore" typeRef="number">
+          <dmn:text>creditScore</dmn:text>
+        </dmn:inputExpression>
+      </dmn:input>
+
+      <dmn:input id="_Input_DT_LoanAmount">
+        <dmn:inputExpression id="_Expr_LoanAmount" typeRef="number">
+          <dmn:text>loanAmount</dmn:text>
+        </dmn:inputExpression>
+      </dmn:input>
+
+      <!-- Output -->
+      <dmn:output id="_Output_DT_ApprovalStatus" name="approvalStatus" typeRef="string"/>
+
+      <!-- Rules -->
+      <dmn:rule id="_Rule_Approved">
+        <dmn:inputEntry id="_InputEntry_ApprovedScore"><dmn:text>[700..900]</dmn:text></dmn:inputEntry>
+        <dmn:inputEntry id="_InputEntry_ApprovedAmount"><dmn:text>[0..10000]</dmn:text></dmn:inputEntry>
+        <dmn:outputEntry id="_OutputEntry_Approved"><dmn:text>"Approved"</dmn:text></dmn:outputEntry>
+      </dmn:rule>
+
+      <dmn:rule id="_Rule_Declined">
+        <dmn:inputEntry id="_InputEntry_DeclinedScore"><dmn:text>[0..699]</dmn:text></dmn:inputEntry>
+        <dmn:inputEntry id="_InputEntry_DeclinedAmount"><dmn:text>-</dmn:text></dmn:inputEntry>
+        <dmn:outputEntry id="_OutputEntry_Declined"><dmn:text>"Declined"</dmn:text></dmn:outputEntry>
+      </dmn:rule>
+
+      <dmn:rule id="_Rule_ManualReview">
+        <dmn:inputEntry id="_InputEntry_ManualScore"><dmn:text>[700..900]</dmn:text></dmn:inputEntry>
+        <dmn:inputEntry id="_InputEntry_ManualAmount"><dmn:text>[10001..1000000]</dmn:text></dmn:inputEntry>
+        <dmn:outputEntry id="_OutputEntry_ManualReview"><dmn:text>"Manual Review"</dmn:text></dmn:outputEntry>
+      </dmn:rule>
+
+
+    </dmn:decisionTable>
+  </dmn:decision>
+
+  <!-- DMNDI Diagram Section -->
+  <dmndi:DMNDI>
+    <dmndi:DMNDiagram id="_DMNDiagram_LoanApproval" name="DRG">
+      <di:extension>
+        <kie:ComponentsWidthsExtension>
+          <kie:ComponentWidths dmnElementRef="_DecisionTable_LoanApproval">
+            <kie:width>200</kie:width>
+            <kie:width>150</kie:width>
+            <kie:width>150</kie:width>
+          </kie:ComponentWidths>
+        </kie:ComponentsWidthsExtension>
+      </di:extension>
+
+      <!-- Input Shapes -->
+      <dmndi:DMNShape id="dmnshape-_Input_CreditScore" dmnElementRef="_Input_CreditScore">
+        <dc:Bounds x="100" y="100" width="120" height="50"/>
+      </dmndi:DMNShape>
+
+      <dmndi:DMNShape id="dmnshape-_Input_LoanAmount" dmnElementRef="_Input_LoanAmount">
+        <dc:Bounds x="100" y="200" width="120" height="50"/>
+      </dmndi:DMNShape>
+
+      <!-- Decision Shape -->
+      <dmndi:DMNShape id="dmnshape-_Decision_LoanApproval" dmnElementRef="_Decision_LoanApproval">
+        <dc:Bounds x="300" y="150" width="200" height="100"/>
+      </dmndi:DMNShape>
+
+      <!-- Edges -->
+      <dmndi:DMNEdge id="dmnedge-_IR_CreditScore" dmnElementRef="_IR_CreditScore">
+        <di:waypoint x="220" y="125"/>
+        <di:waypoint x="300" y="200"/>
+      </dmndi:DMNEdge>
+
+      <dmndi:DMNEdge id="dmnedge-_IR_LoanAmount" dmnElementRef="_IR_LoanAmount">
+        <di:waypoint x="220" y="225"/>
+        <di:waypoint x="300" y="200"/>
+      </dmndi:DMNEdge>
+
+    </dmndi:DMNDiagram>
+  </dmndi:DMNDI>
+
+</dmn:definitions>
